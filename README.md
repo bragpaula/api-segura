@@ -125,8 +125,9 @@ Ao criar ou atualizar usuários, os seguintes critérios são obrigatórios:
 
 ### 👩‍💻 Desenvolvido por
 
-* Paula Braga
-  Disciplina de Programação Orientada a Serviço
-  IFRN — 2025
+**Paula Braga**  
+Disciplina de Programação Orientada a Serviço  
+IFRN — 2025
+
 
 ---
