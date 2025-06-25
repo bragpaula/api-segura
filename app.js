@@ -9,6 +9,7 @@ const Mensagem = require('./models/mensagem');
 // rotas
 app.use('/usuarios', require('./routes/usuarios'));
 app.use('/mensagens', require('./routes/mensagens'));
+app.use('/mensagens/:id/comentarios', require('./routes/comentarios'));
 
 // iniciar banco e servidor
 sequelize.sync({ force: false }).then(() => {
