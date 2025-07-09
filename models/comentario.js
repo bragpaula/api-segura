@@ -1,6 +1,7 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('./index');
 const Mensagem = require('./mensagem');
+const Usuario = require('./usuario');
 
 const Comentario = sequelize.define('Comentario', {
   conteudo: {
@@ -9,6 +10,7 @@ const Comentario = sequelize.define('Comentario', {
   }
 });
 
+// Comentário pertence à Mensagem
 Comentario.belongsTo(Mensagem, {
   foreignKey: 'mensagemId',
   as: 'mensagem'
@@ -16,6 +18,17 @@ Comentario.belongsTo(Mensagem, {
 
 Mensagem.hasMany(Comentario, {
   foreignKey: 'mensagemId',
+  as: 'comentarios'
+});
+
+// Comentário pertence ao Usuário
+Comentario.belongsTo(Usuario, {
+  foreignKey: 'usuarioId',
+  as: 'autor'
+});
+
+Usuario.hasMany(Comentario, {
+  foreignKey: 'usuarioId',
   as: 'comentarios'
 });
 
