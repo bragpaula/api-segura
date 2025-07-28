@@ -4,11 +4,12 @@ const Usuario = require('./usuario');
 
 const Mensagem = sequelize.define('Mensagem', {
     conteudo: {
-        type: DataTypes.TEXT,
-        allowNull: false
-    }
-});
+            type: DataTypes.TEXT,
+                    allowNull: false
+                        }
+                        });
 
-Mensagem.belongsTo(Usuario, { as: 'autor', foreignKey: 'usuarioId' });
+                        Mensagem.belongsTo(Usuario, { as: 'autor', foreignKey: 'usuarioId' });
 
-module.exports = Mensagem;
+                        module.exports = Mensagem;
+                        

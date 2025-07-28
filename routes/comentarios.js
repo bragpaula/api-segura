@@ -1,105 +1,79 @@
 const express = require('express');
-const router = express.Router({ mergeParams: true }); // permite acessar req.params.id
+const router = express.Router();
 const Comentario = require('../models/comentario');
 const Mensagem = require('../models/mensagem');
-const Usuario = require('../models/usuario'); // necessário para o include do autor
+const authMiddleware = require('../middleware/auth');
 
-// POST /mensagens/:id/comentarios
-router.post('/', async (req, res) => {
-  const { conteudo } = req.body;
-  const mensagemId = req.params.id;
+// Listar todos os comentários
+router.get('/', async (req, res) => {
+  try {
+    const comentarios = await Comentario.findAll({
+      include: [
+        {
+          model: Mensagem,
+          as: 'mensagem',
+          attributes: ['id', 'conteudo']
+        },
+        {
+          model: require('../models/usuario'),
+          as: 'autor',
+          attributes: ['id', 'nome']
+        }
+      ]
+    });
+    res.json(comentarios);
+  } catch (error) {
+    res.status(500).json({ mensagem: 'Erro ao buscar comentários', erro: error.message });
+  }
+});
+
+// Criar novo comentário (com autenticação)
+router.post('/', authMiddleware, async (req, res) => {
+  const { conteudo, mensagemId } = req.body;
+  const usuarioId = req.usuario.id;
+
+  if (!conteudo || !mensagemId) {
+    return res.status(400).json({ mensagem: 'Conteúdo e mensagemId são obrigatórios' });
+  }
 
   try {
-    const mensagem = await Mensagem.findByPk(mensagemId);
-    if (!mensagem) {
-      return res.status(404).json({ erro: 'Mensagem não encontrada' });
-    }
-
-    if (!conteudo || conteudo.trim() === '') {
-      return res.status(400).json({ erro: 'Conteúdo do comentário é obrigatório' });
+    const novaMensagem = await Mensagem.findByPk(mensagemId);
+    if (!novaMensagem) {
+      return res.status(404).json({ mensagem: 'Mensagem não encontrada' });
     }
 
     const comentario = await Comentario.create({
       conteudo,
       mensagemId,
-      usuarioId: 1 // autor padrão
+      usuarioId
     });
 
     res.status(201).json(comentario);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ erro: 'Erro ao criar comentário' });
+    res.status(500).json({ mensagem: 'Erro ao criar comentário', erro: error.message });
   }
 });
 
-// GET /mensagens/:id/comentarios
-router.get('/', async (req, res) => {
-  const mensagemId = req.params.id;
-
-  try {
-    const comentarios = await Comentario.findAll({
-      where: { mensagemId },
-      include: {
-        association: 'autor',
-        attributes: ['id', 'nome']
-      }
-    });
-
-    res.json(comentarios);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ erro: 'Erro ao buscar comentários' });
-  }
-});
-
-// PUT /comentarios/:comentarioId
-router.put('/:comentarioId', async (req, res) => {
-  const { conteudo, usuarioId, mensagemId } = req.body;
-  const { comentarioId } = req.params;
+// Excluir um comentário (autenticado)
+router.delete('/:id', authMiddleware, async (req, res) => {
+  const comentarioId = req.params.id;
+  const usuarioId = req.usuario.id;
 
   try {
     const comentario = await Comentario.findByPk(comentarioId);
+
     if (!comentario) {
-      return res.status(404).json({ erro: 'Comentário não encontrado' });
+      return res.status(404).json({ mensagem: 'Comentário não encontrado' });
     }
 
-    if (usuarioId || mensagemId) {
-      return res.status(400).json({ erro: 'Não é permitido alterar autor ou mensagem' });
-    }
-
-    if (!conteudo || conteudo.trim() === '') {
-      return res.status(400).json({ erro: 'Conteúdo não pode ser vazio' });
-    }
-
-    comentario.conteudo = conteudo;
-    await comentario.save();
-
-    res.json({ mensagem: 'Comentário atualizado com sucesso', comentario });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ erro: 'Erro ao atualizar comentário' });
-  }
-});
-
-// DELETE /comentarios/:comentarioId
-router.delete('/:comentarioId', async (req, res) => {
-  const { comentarioId } = req.params;
-
-  try {
-    const comentario = await Comentario.findByPk(comentarioId);
-    if (!comentario) {
-      return res.status(404).json({ erro: 'Comentário não encontrado' });
-    }
-
-    if (comentario.usuarioId !== 1) {
-      return res.status(403).json({ erro: 'Você não tem permissão para deletar este comentário' });
+    if (comentario.usuarioId !== usuarioId) {
+      return res.status(403).json({ mensagem: 'Você só pode excluir seus próprios comentários' });
     }
 
     await comentario.destroy();
-    res.json({ mensagem: 'Comentário deletado com sucesso' });
+    res.json({ mensagem: 'Comentário excluído com sucesso' });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ erro: 'Erro ao deletar comentário' });
+    res.status(500).json({ mensagem: 'Erro ao excluir comentário', erro: error.message });
   }
 });
 
