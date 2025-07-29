@@ -4,6 +4,10 @@ const bcrypt = require('bcryptjs');
 const { body, validationResult } = require('express-validator');
 
 const Usuario = require('../models/usuario');
+const auth = require('../middleware/auth');
+const isAdmin = require('../middleware/isAdmin');
+const autorizadoOuAdmin = require('../middleware/autorizadoOuAdmin');
+
 
 // Regras de validação
 const validacoesUsuario = [
@@ -21,7 +25,7 @@ const validacoesUsuario = [
     .matches(/[@!%*?&]/).withMessage('A senha deve conter pelo menos 1 caractere especial (@!%*?&)')
 ];
 
-// Criar usuário
+// Criar usuário (aberto)
 router.post('/', validacoesUsuario, async (req, res) => {
   const erros = validationResult(req);
   if (!erros.isEmpty()) {
@@ -55,8 +59,8 @@ router.post('/', validacoesUsuario, async (req, res) => {
   }
 });
 
-// Listar usuários
-router.get('/', async (req, res) => {
+// Listar usuários (apenas admin)
+router.get('/', auth, isAdmin, async (req, res) => {
   try {
     const usuarios = await Usuario.findAll({
       attributes: { exclude: ['senha'] }
@@ -68,7 +72,7 @@ router.get('/', async (req, res) => {
 });
 
 // Obter um usuário por ID
-router.get('/:id', async (req, res) => {
+router.get('/:id', auth, autorizadoOuAdmin, async (req, res) => {
   try {
     const usuario = await Usuario.findByPk(req.params.id, {
       attributes: { exclude: ['senha'] }
@@ -85,7 +89,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Atualizar usuário
-router.put('/:id', validacoesUsuario, async (req, res) => {
+router.put('/:id', auth, autorizadoOuAdmin, validacoesUsuario, async (req, res) => {
   const erros = validationResult(req);
   if (!erros.isEmpty()) {
     return res.status(400).json({ erros: erros.array() });
@@ -125,7 +129,7 @@ router.put('/:id', validacoesUsuario, async (req, res) => {
 });
 
 // Deletar usuário
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', auth, autorizadoOuAdmin, async (req, res) => {
   try {
     const usuario = await Usuario.findByPk(req.params.id);
 

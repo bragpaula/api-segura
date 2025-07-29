@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
-const JWT_SECRET = 'apisegura';
+require('dotenv').config();
 
-module.exports = function (req, res, next) {
+module.exports = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
@@ -11,10 +11,10 @@ module.exports = function (req, res, next) {
   const token = authHeader.split(' ')[1];
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    req.usuario = decoded; // dados do token disponíveis nas rotas protegidas
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.usuario = decoded;
     next();
   } catch (error) {
-    res.status(401).json({ mensagem: 'Token inválido' });
+    res.status(401).json({ mensagem: 'Token inválido ou expirado' });
   }
 };

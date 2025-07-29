@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const app = express();
 app.use(express.json());
@@ -13,6 +14,7 @@ app.use('/auth', require('./routes/login'));          // login/logout
 app.use('/usuarios', require('./routes/usuarios'));   // criação e listagem de usuários
 app.use('/mensagens', require('./routes/mensagens')); // mensagens
 app.use('/comentarios', require('./routes/comentarios')); // comentários nas mensagens
+app.use('/refresh', require('./routes/refresh'));
 
 // Sincronização do banco e início do servidor
 sequelize.sync({ force: false }).then(() => {

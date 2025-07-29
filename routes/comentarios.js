@@ -54,6 +54,37 @@ router.post('/', authMiddleware, async (req, res) => {
   }
 });
 
+// Atualizar um comentário (autenticado)
+router.put('/:id', authMiddleware, async (req, res) => {
+  const comentarioId = req.params.id;
+  const usuarioId = req.usuario.id;
+  const { conteudo } = req.body;
+
+  if (!conteudo) {
+    return res.status(400).json({ mensagem: 'Conteúdo é obrigatório' });
+  }
+
+  try {
+    const comentario = await Comentario.findByPk(comentarioId);
+
+    if (!comentario) {
+      return res.status(404).json({ mensagem: 'Comentário não encontrado' });
+    }
+
+    if (comentario.usuarioId !== usuarioId) {
+      return res.status(403).json({ mensagem: 'Você só pode editar seus próprios comentários' });
+    }
+
+    comentario.conteudo = conteudo;
+    await comentario.save();
+
+    res.json({ mensagem: 'Comentário atualizado com sucesso', comentario });
+  } catch (error) {
+    res.status(500).json({ mensagem: 'Erro ao atualizar comentário', erro: error.message });
+  }
+});
+
+
 // Excluir um comentário (autenticado)
 router.delete('/:id', authMiddleware, async (req, res) => {
   const comentarioId = req.params.id;
