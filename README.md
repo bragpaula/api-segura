@@ -150,6 +150,6 @@ Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou pull r
 
 ## 🙋‍♀️ Desenvolvido por
 
-Paula Braga – [@seu-usuario](https://github.com/bragpaula)
+Paula Braga – [@bragpaula](https://github.com/bragpaula)
 
 ---
