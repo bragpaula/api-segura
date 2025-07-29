@@ -1,133 +1,155 @@
----
+# 🔐 API Segura com Autenticação JWT
 
-## 🛡️ API Segura - Programação Orientada a Serviço
-
-Projeto da disciplina de Programação Orientada a Serviço, com foco em **Segurança da Informação em APIs RESTful**.
-Desenvolvido com Node.js, Express e Sequelize + SQLite.
+Este é um projeto de uma API RESTful desenvolvida com Node.js, Express e Sequelize, com autenticação e autorização usando JWT (JSON Web Tokens). O sistema gerencia usuários, mensagens e comentários com diferentes níveis de acesso: usuários comuns e administradores.
 
 ---
 
-### 📚 Objetivo
+## 🧱 Estrutura do Projeto
 
-A proposta é estender a API desenvolvida na primeira unidade, adicionando:
+```
 
-* Gerenciamento de usuários (CRUD com validações e criptografia de senhas)
-* Associação entre mensagens e seus autores
-* Regras de segurança: autor não pode ser alterado
-* Tratamento de erros e boas práticas REST
+.
+├── middleware/              # Middlewares de autenticação e autorização
+│   ├── auth.js
+│   ├── autorizadoOuAdmin.js
+│   └── isAdmin.js
+│
+├── models/                  # Modelos Sequelize
+│   ├── comentario.js
+│   ├── index.js
+│   ├── mensagem.js
+│   └── usuario.js
+│
+├── routes/                  # Rotas da API
+│   ├── comentarios.js
+│   ├── login.js
+│   ├── mensagens.js
+│   ├── refresh.js
+│   └── usuarios.js
+│
+├── tokens/                  # Geração de tokens JWT
+│   └── gerarTokens.js
+│
+├── .env                     # Variáveis de ambiente
+├── app.js                   # Arquivo principal
+├── criarAdmin.js            # Script para criar usuário admin
+├── database.sqlite          # Banco de dados SQLite
+├── package.json
+└── README.md
+
+````
 
 ---
 
-### ⚙️ Tecnologias
+## 🔑 Funcionalidades
 
-* Node.js + Express
-* Sequelize ORM
-* SQLite (banco de dados local)
-* `express-validator` (validação de dados)
-* `bcryptjs` (criptografia de senhas)
+- Autenticação com **JWT** (token de acesso e refresh token)
+- **Login** de usuário com geração de token
+- **Refresh token** com endpoint seguro
+- Proteção de rotas com **middleware de autorização**
+- Níveis de permissão: **usuário comum** e **admin**
+- CRUD de usuários, mensagens e comentários
+- Validação e verificação de tokens
+- Banco de dados persistente com **SQLite**
 
 ---
 
-### 📦 Instalação
+## 🚀 Como rodar o projeto
+
+### 1. Clone o repositório
 
 ```bash
 git clone https://github.com/seu-usuario/api-segura.git
+cd api-segura
+````
+
+### 2. Instale as dependências
+
+```bash
 npm install
 ```
 
----
+### 3. Crie o arquivo `.env`
 
-### ▶️ Execução
+Crie um arquivo `.env` com as seguintes variáveis:
+
+```env
+JWT_SECRET=sua_chave_secreta
+REFRESH_SECRET=sua_chave_refresh
+ACCESS_TOKEN_EXPIRATION=15m
+REFRESH_TOKEN_EXPIRATION=1d
+```
+
+### 4. Rode o projeto
 
 ```bash
-npm start
-```
-
-Servidor rodará em:
-📍 `http://localhost:3000`
-
----
-
-### 🗃️ Estrutura de Pastas
-
-```
-.
-│
-├── models/            
-│   ├── index.js       
-│   ├── usuario.js     
-│   └── mensagem.js    
-│
-├── routes/            
-│   ├── usuarios.js
-│   └── mensagens.js
-│
-├── app.js             
-└── database.sqlite    
-
+node app.js
 ```
 
 ---
 
-### 🔐 Validações de Usuário
+## 🧪 Teste os Endpoints
 
-Ao criar ou atualizar usuários, os seguintes critérios são obrigatórios:
+Você pode testar a API com ferramentas como [Postman](https://www.postman.com/) ou [Insomnia](https://insomnia.rest/). Os principais endpoints são:
 
-* **Email:** único e em formato válido (`usuario@dominio.com`)
-* **Nome:** não pode ser vazio
-* **Senha:**
+### Autenticação
 
-  * Mínimo de 8 caracteres
-  * Pelo menos 1 número
-  * 1 letra maiúscula e 1 minúscula
-  * 1 caractere especial (`@!%*?&`)
+* `POST /login` - Login com e-mail e senha
+* `POST /refresh` - Geração de novo access token com refresh token
 
----
+### Usuários
 
-### 💬 Regras de Mensagem
+* `GET /usuarios` - Listar usuários (apenas admin)
+* `POST /usuarios` - Criar novo usuário
 
-* Cada mensagem está vinculada a um **usuário autor**
-* O autor é **definido automaticamente** como o usuário com `id = 1`
-* A troca de autor **não é permitida** após a criação
-* O conteúdo da mensagem pode ser atualizado
+### Mensagens
 
----
+* `GET /mensagens` - Listar mensagens
+* `POST /mensagens` - Criar nova mensagem
+* `DELETE /mensagens/:id` - Deletar (autorizado ou admin)
 
-### 🧪 Exemplos de Endpoints
+### Comentários
 
-#### 🔹 Usuários
-
-* `POST /usuarios` – Cria novo usuário
-* `GET /usuarios` – Lista todos os usuários
-* `GET /usuarios/:id` – Busca usuário pelo ID
-* `PUT /usuarios/:id` – Atualiza usuário
-* `DELETE /usuarios/:id` – Remove usuário
-
-#### 🔹 Mensagens
-
-* `POST /mensagens` – Cria nova mensagem (vinculada ao usuário ID 1)
-* `GET /mensagens` – Lista todas as mensagens com autor
-* `GET /mensagens/:id` – Busca mensagem pelo ID
-* `PUT /mensagens/:id` – Atualiza conteúdo da mensagem
-* `DELETE /mensagens/:id` – Remove mensagem
+* `GET /comentarios`
+* `POST /comentarios`
 
 ---
 
-### 🧠 Próximos passos (etapas futuras da disciplina)
+## 👤 Criação de Admin
 
-* Autenticação com JWT
-* Login e logout de usuários
-* Proteção de rotas privadas
-* Controle de acesso (autorização)
-* Logs e monitoramento
+Você pode executar o script `criarAdmin.js` para criar um usuário administrador manualmente:
+
+```bash
+node criarAdmin.js
+```
 
 ---
 
-### 👩‍💻 Desenvolvido por
+## 📌 Tecnologias utilizadas
 
-**Paula Braga**  
-Disciplina de Programação Orientada a Serviço  
-IFRN — 2025
+* [Node.js](https://nodejs.org/)
+* [Express](https://expressjs.com/)
+* [JWT](https://jwt.io/)
+* [Sequelize](https://sequelize.org/)
+* [SQLite](https://www.sqlite.org/index.html)
+* [Dotenv](https://github.com/motdotla/dotenv)
 
+---
+
+## 📄 Licença
+
+Este projeto está licenciado sob a licença MIT.
+
+---
+
+## ✨ Contribuições
+
+Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou pull requests.
+
+---
+
+## 🙋‍♀️ Desenvolvido por
+
+Paula Braga – [@seu-usuario](https://github.com/bragpaula)
 
 ---
