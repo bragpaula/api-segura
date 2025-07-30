@@ -29,7 +29,7 @@ router.post('/', async (req, res) => {
 
     // Geração do Access Token
     const accessToken = jwt.sign(
-      { id: usuario.id, nome: usuario.nome, tipo: usuario.tipo },
+      { id: usuario.id, nome: usuario.nome, isAdmin: usuario.isAdmin },
       JWT_SECRET,
       { expiresIn: ACCESS_TOKEN_EXPIRATION || '15m' }
     );
