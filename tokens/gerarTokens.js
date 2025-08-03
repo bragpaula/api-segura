@@ -7,10 +7,10 @@ const gerarTokens = (usuario) => {
     isAdmin: usuario.isAdmin,
   };
 
-  const accessToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '15m' });
-  const refreshToken = jwt.sign(payload, process.env.REFRESH_SECRET, { expiresIn: '7d' });
+  const access_token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '15m' });
+  const refresh_token = jwt.sign(payload, process.env.REFRESH_SECRET, { expiresIn: '7d' });
 
-  return { accessToken, refreshToken };
+  return { access_token, refresh_token };
 };
 
 module.exports = gerarTokens;

@@ -22,7 +22,6 @@ const validacoesUsuario = [
     .matches(/\d/).withMessage('A senha deve conter pelo menos 1 número')
     .matches(/[A-Z]/).withMessage('A senha deve conter pelo menos 1 letra maiúscula')
     .matches(/[a-z]/).withMessage('A senha deve conter pelo menos 1 letra minúscula')
-    .matches(/[@!%*?&]/).withMessage('A senha deve conter pelo menos 1 caractere especial (@!%*?&)')
 ];
 
 // Criar usuário (aberto)
@@ -89,7 +88,7 @@ router.get('/:id', auth, autorizadoOuAdmin, async (req, res) => {
 });
 
 // Atualizar usuário
-router.put('/:id', auth, autorizadoOuAdmin, validacoesUsuario, async (req, res) => {
+router.patch('/:id', auth, autorizadoOuAdmin, validacoesUsuario, async (req, res) => {
   const erros = validationResult(req);
   if (!erros.isEmpty()) {
     return res.status(400).json({ erros: erros.array() });

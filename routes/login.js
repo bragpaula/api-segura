@@ -28,14 +28,14 @@ router.post('/', async (req, res) => {
     }
 
     // Geração do Access Token
-    const accessToken = jwt.sign(
+    const access_token = jwt.sign(
       { id: usuario.id, nome: usuario.nome, isAdmin: usuario.isAdmin },
       JWT_SECRET,
       { expiresIn: ACCESS_TOKEN_EXPIRATION || '15m' }
     );
 
     // Geração do Refresh Token
-    const refreshToken = jwt.sign(
+    const refresh_token = jwt.sign(
       { id: usuario.id },
       REFRESH_SECRET,
       { expiresIn: REFRESH_TOKEN_EXPIRATION || '7d' }
@@ -43,8 +43,8 @@ router.post('/', async (req, res) => {
 
     // Envia os dois tokens
     res.json({
-      accessToken,
-      refreshToken
+      access_token,
+      refresh_token
     });
   } catch (error) {
     res.status(500).json({ mensagem: 'Erro ao fazer login', erro: error.message });

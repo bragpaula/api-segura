@@ -5,14 +5,14 @@ const jwt = require('jsonwebtoken');
 const { REFRESH_SECRET, JWT_SECRET, ACCESS_TOKEN_EXPIRATION } = process.env;
 
 router.post('/', (req, res) => {
-  const { refreshToken } = req.body;
+  const { refresh_token } = req.body;
 
-  if (!refreshToken) {
+  if (!refresh_token) {
     return res.status(401).json({ mensagem: 'Refresh token ausente' });
   }
 
   try {
-    const decoded = jwt.verify(refreshToken, REFRESH_SECRET);
+    const decoded = jwt.verify(refresh_token, REFRESH_SECRET);
 
     const newAccessToken = jwt.sign(
       { id: decoded.id },
@@ -20,7 +20,7 @@ router.post('/', (req, res) => {
       { expiresIn: ACCESS_TOKEN_EXPIRATION || '15m' }
     );
 
-    res.json({ accessToken: newAccessToken });
+    res.json({ access_token: newAccessToken });
   } catch (error) {
     res.status(403).json({ mensagem: 'Refresh token inválido ou expirado' });
   }

@@ -10,11 +10,11 @@ require('./models/usuario');
 require('./models/mensagem');
 
 // Rotas
-app.use('/auth', require('./routes/login'));          // login/logout
+app.use('/auth/login', require('./routes/login'));          // login/logout
 app.use('/usuarios', require('./routes/usuarios'));   // criação e listagem de usuários
 app.use('/mensagens', require('./routes/mensagens')); // mensagens
-app.use('/comentarios', require('./routes/comentarios')); // comentários nas mensagens
-app.use('/refresh', require('./routes/refresh'));
+app.use('/mensagens/:mensagemId/comentarios', require('./routes/comentarios')); // comentários nas mensagens
+app.use('/auth/refresh', require('./routes/refresh'));
 
 // Sincronização do banco e início do servidor
 sequelize.sync({ force: false }).then(() => {
