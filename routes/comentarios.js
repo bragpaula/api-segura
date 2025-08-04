@@ -58,8 +58,8 @@ router.post('/', authMiddleware, async (req, res) => {
 });
 
 // PUT /comentarios/:id - Atualizar comentário (autenticado)
-router.put('/:id', authMiddleware, async (req, res) => {
-  const comentarioId = req.params.id;
+router.put('/:comentarioId', authMiddleware, async (req, res) => {
+  const comentarioId = req.params.comentarioId;
   const { conteudo } = req.body;
   const usuarioId = req.usuario.id;
 
@@ -88,8 +88,8 @@ router.put('/:id', authMiddleware, async (req, res) => {
 });
 
 // DELETE /comentarios/:id - Excluir comentário (autenticado)
-router.delete('/:id', authMiddleware, async (req, res) => {
-  const comentarioId = req.params.id;
+router.delete('/:comentarioId', authMiddleware, async (req, res) => {
+  const comentarioId = req.params.comentarioId;
   const usuarioId = req.usuario.id;
 
   try {
