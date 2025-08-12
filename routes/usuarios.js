@@ -20,7 +20,6 @@ const validacoesUsuario = [
   body('senha')
     .isLength({ min: 8 }).withMessage('A senha deve ter pelo menos 8 caracteres')
     .matches(/\d/).withMessage('A senha deve conter pelo menos 1 número')
-    .matches(/[A-Z]/).withMessage('A senha deve conter pelo menos 1 letra maiúscula')
     .matches(/[a-z]/).withMessage('A senha deve conter pelo menos 1 letra minúscula')
 ];
 
