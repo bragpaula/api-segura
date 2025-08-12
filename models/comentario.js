@@ -7,7 +7,15 @@ const Comentario = sequelize.define('Comentario', {
   conteudo: {
     type: DataTypes.TEXT,
     allowNull: false
+  },
+  data_criacao: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW,
+    allowNull: false
   }
+}, {
+  tableName: 'comentarios',
+  timestamps: false
 });
 
 // Comentário pertence à Mensagem
